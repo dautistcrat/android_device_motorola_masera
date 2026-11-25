@@ -86,7 +86,7 @@ jobs:
         source build/envsetup.sh
         export ALLOW_MISSING_DEPENDENCIES=true
         set -e
-        lunch twrp_${{ inputs.DEVICE_NAME }}-eng && mka vendorbootimage
+        lunch twrp_${{ inputs.DEVICE_NAME }}-ap4a-eng && mka vendorbootimage
 
     - name: Set Release Properties
       run: |
