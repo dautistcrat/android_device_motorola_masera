@@ -5,9 +5,9 @@ DEVICE_PATH := device/motorola/masera
 ALLOW_MISSING_DEPENDENCIES := true
 BUILD_BROKEN_DUP_RULES := true
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
-# Stock kernel is 4K pages (6.1.145-android14, getconf PAGE_SIZE=4096); the 16K ELF
-# alignment check only matters for 16K devices and rejects the 4K magiskboot prebuilt
-PRODUCT_CHECK_ELF_FILES := false
+# Stock kernel is 4K pages (6.1.145-android14, getconf PAGE_SIZE=4096); allow the 4K
+# magiskboot prebuilt through the 16K ELF alignment check (irrelevant for this device)
+BUILD_BROKEN_PREBUILT_ELF_FILES := true
 
 # ========================================
 # Architecture Info
