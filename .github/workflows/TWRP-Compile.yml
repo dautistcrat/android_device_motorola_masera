@@ -1,4 +1,5 @@
 name: TWRP - Build
+# Device: Motorola Edge 2026 (masera, XT2609)
 
 # Plain TWRP build of the same device tree via the minimal manifest.
 # /data decrypt on this base is best-effort; OrangeFox remains the
