@@ -5,6 +5,9 @@ DEVICE_PATH := device/motorola/masera
 ALLOW_MISSING_DEPENDENCIES := true
 BUILD_BROKEN_DUP_RULES := true
 BUILD_BROKEN_ELF_PREBUILT_PRODUCT_COPY_FILES := true
+# Stock kernel is 4K pages (6.1.145-android14, getconf PAGE_SIZE=4096); the 16K ELF
+# alignment check only matters for 16K devices and rejects the 4K magiskboot prebuilt
+PRODUCT_CHECK_ELF_FILES := false
 
 # ========================================
 # Architecture Info
@@ -32,8 +35,8 @@ TARGET_OTA_ASSERT_DEVICE := masera
 PRODUCT_PLATFORM := mt6878
 TARGET_BOARD_PLATFORM := $(PRODUCT_PLATFORM)
 TARGET_BOARD_PLATFORM_GPU := mali-g615mc2
-# Fallback: stock platform board name; confirm via `getprop ro.bootloader` on live device
-TARGET_BOOTLOADER_BOARD_NAME := mgvi_64_ww_armv82
+# Live: ro.bootloader=MBM-3.1-masera-82d9b9-W3WF36.52-40-3-c7e92 (board token is masera)
+TARGET_BOOTLOADER_BOARD_NAME := masera
 TARGET_NO_BOOTLOADER := true
 TARGET_USES_UEFI := true
 TARGET_RECOVERY_FSTAB := $(DEVICE_PATH)/recovery/root/system/etc/recovery.fstab
@@ -165,9 +168,10 @@ BOARD_AVB_VENDOR_BOOT_ROLLBACK_INDEX_LOCATION := 1
 # Display / UI
 # ========================================
 TARGET_RECOVERY_PIXEL_FORMAT := RGBX_8888
-# Fallback (leds-mtk matches donor); confirm max_brightness on live device
-TW_MAX_BRIGHTNESS := 3075
-TW_DEFAULT_BRIGHTNESS := 1020
+# Live: /sys/class/leds/lcd-backlight/{brightness,max_brightness=15930}; no /sys/class/backlight nodes
+TW_BRIGHTNESS_PATH := "/sys/class/leds/lcd-backlight/brightness"
+TW_MAX_BRIGHTNESS := 15930
+TW_DEFAULT_BRIGHTNESS := 4000
 TW_FRAMERATE := 90
 TW_NO_CPU_TEMP := true
 
