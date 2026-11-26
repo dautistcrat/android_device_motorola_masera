@@ -143,6 +143,9 @@ jobs:
           echo "Building for 16.0"
           lunch twrp_${{ inputs.DEVICE_NAME }}-bp2a-eng && make clean && mka adbd ${{ inputs.BUILD_TARGET }}image
         fi
+        if ! ls out/target/product/${{ inputs.DEVICE_NAME }}/OrangeFox*.img >/dev/null 2>&1; then
+          echo "ERROR: no OrangeFox image was built (lunch or mka failed silently)"; exit 1
+        fi
 
     - name: Set Release Properties
       run: |
