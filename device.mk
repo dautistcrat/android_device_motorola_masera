@@ -89,8 +89,9 @@ FOX_VARIANT ?= a_14
 # Stock masera modules come from Android 16; keep their provenance independent of the recovery flavor
 MASERA_MODULE_VARIANT ?= a_16
 ifeq ($(MASERA_MODULE_VARIANT),a_16)
+MASERA_MODULE_DIR := stock_16
 PRODUCT_COPY_FILES += \
-    $(call find-copy-subdir-files,*,device/motorola/masera/per_version_modules/$(MASERA_MODULE_VARIANT),$(TARGET_COPY_OUT_VENDOR_RAMDISK)/lib/modules)
+    $(call find-copy-subdir-files,*,device/motorola/masera/per_version_modules/$(MASERA_MODULE_DIR),$(TARGET_COPY_OUT_VENDOR_RAMDISK)/lib/modules)
 endif
 
 # To fix bootloop due to missing files
