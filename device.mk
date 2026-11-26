@@ -13,7 +13,8 @@ ENABLE_VIRTUAL_AB := true
 # Stock verbatim: ro.product.first_api_level=36, ro.board.first_api_level=34, vendor sdk=34
 PRODUCT_TARGET_VNDK_VERSION := 34
 BOARD_SHIPPING_API_LEVEL := 34
-PRODUCT_SHIPPING_API_LEVEL := 36
+# 34 (not stock product 36): recovery ships no product partition; TWRP-14 build enforces SYSTEMSDK>=SHIPPING
+PRODUCT_SHIPPING_API_LEVEL := 34
 
 # Device-specific variables
 PRODUCT_PLATFORM := mt6878

@@ -5,7 +5,8 @@ on early-init
     write /proc/bootprof "ChimpanziCloud: started early-init sequence"
     wait /sys/fs/selinux/enforce
     write /sys/fs/selinux/enforce 0
-    exec -- /system/bin/toybox sh -c "echo OFOX-R5-M1-early-init-done > /dev/pmsg0 || true"
+    exec -- /system/bin/toybox sh -c "echo OFOX-R6-M1-early-init-done > /dev/pmsg0 || true"
+    reboot bootloader
 
 service vendor.boot-default /vendor/bin/hw/android.hardware.boot-service.mtk
     class early_hal
@@ -21,7 +22,7 @@ on init
     setprop sys.usb.controller "11201000.usb0"
     export LD_LIBRARY_PATH /system/lib64:/vendor/lib64:/vendor/lib64/hw
     start vendor.boot-default
-    exec -- /system/bin/toybox sh -c "echo OFOX-R5-M2-init-done > /dev/pmsg0 || true"
+    exec -- /system/bin/toybox sh -c "echo OFOX-R6-M2-init-done > /dev/pmsg0 || true"
     
 on fs && property:ro.debuggable=0
     start adbd
@@ -177,13 +178,13 @@ on property:twrp.modules.loaded=true
     start virtual_torch
 
 on late-init
-    exec -- /system/bin/toybox sh -c "echo OFOX-R5-M3-late-init > /dev/pmsg0 || true"
+    exec -- /system/bin/toybox sh -c "echo OFOX-R6-M3-late-init > /dev/pmsg0 || true"
 
 on boot
-    exec -- /system/bin/toybox sh -c "echo OFOX-R5-M4-boot > /dev/pmsg0 || true"
+    exec -- /system/bin/toybox sh -c "echo OFOX-R6-M4-boot > /dev/pmsg0 || true"
 
 on property:init.svc.recovery=running
-    exec -- /system/bin/toybox sh -c "echo OFOX-R5-M5-recovery-running > /dev/pmsg0 || true"
+    exec -- /system/bin/toybox sh -c "echo OFOX-R6-M5-recovery-running > /dev/pmsg0 || true"
 
 on property:init.svc.vendor.keymint-trustonic=running
-    exec -- /system/bin/toybox sh -c "echo OFOX-R5-MK-keymint-running > /dev/pmsg0 || true"
+    exec -- /system/bin/toybox sh -c "echo OFOX-R6-MK-keymint-running > /dev/pmsg0 || true"
