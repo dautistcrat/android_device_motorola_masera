@@ -1,21 +1,13 @@
-# R8a: minimal rc rebased on STOCK masera init.recovery.mt6878.rc (proven on
+# Minimal rc rebased on STOCK masera init.recovery.mt6878.rc (proven on
 # this exact kernel). All donor extras (vold, keymint, tee, health, boot-hal,
 # markers) removed; re-added one feature per build once this boots.
 #
-# Boot-progress signals (pstore/ramoops is absent on this device, so the
-# phone signals with its own hardware instead):
-#   flash ON + screen DIM   => early-init ran (rc parses, triggers run)
-#   flash OFF + bright      => boot trigger ran (full pass)
-#   flash stuck ON / dim    => died between early-init and boot
-#   no flash, no dim        => died before early-init (init/policy/parse)
-#
+# Boot-progress probe (pstore/ramoops is absent on this device): the screen
+# GLOWS at max backlight when early-init runs (rc parses, triggers run).
 # Live backlight: /sys/class/leds/lcd-backlight, max 15930 (see BoardConfig).
 
 on early-init
-    write /sys/class/flashlight_core/flashlight/flashlight_torch "0 0 0 1"
-
-on early-init
-    write /sys/class/leds/lcd-backlight/brightness 500
+    write /sys/class/leds/lcd-backlight/brightness 15930
 
 on early-init
     write /sys/fs/selinux/enforce 0
@@ -24,14 +16,11 @@ on init
     setprop sys.usb.configfs 1
     setprop sys.usb.controller "11201000.usb0"
 
-on init
-    write /sys/class/flashlight_core/flashlight/flashlight_torch "0 0 0 1"
-
 on fs && property:ro.debuggable=0
     start adbd
 
-on fs
-    write /sys/class/flashlight_core/flashlight/flashlight_torch "0 0 0 1"
+on fs && property:ro.debuggable=1
+    start adbd
 
 on post-fs
     # Support A/B feature for EMMC and UFS boot region (stock)
@@ -51,9 +40,3 @@ on post-fs
 
 on boot
     exec u:r:update_engine:s0 root root -- /system/bin/mtk_plpath_utils
-
-on boot
-    write /sys/class/flashlight_core/flashlight/flashlight_torch "0 0 0 0"
-
-on boot
-    write /sys/class/leds/lcd-backlight/brightness 4000

@@ -13,12 +13,10 @@ on:
       MANIFEST_BRANCH:
         description: 'OrangeFox Manifest Branch'
         required: true
-        default: '16.0'
+        default: '14.1'
         type: choice
         options:
-        - 12.1
         - 14.1
-        - 16.0
       DEVICE_TREE:
         description: 'OrangeFox Device Tree'
         required: true
@@ -26,10 +24,10 @@ on:
       DEVICE_TREE_BRANCH:
         description: 'OrangeFox Device Tree Branch'
         required: true
-        default: 'fox_16.0'
+        default: 'fox_14.1'
         type: choice
         options:
-        - fox_16.0
+        - fox_14.1
       DEVICE_PATH:
         description: 'Specify your Device Path'
         required: true
@@ -70,7 +68,7 @@ on:
       ANDROID_VERSION:
         description: 'Specify your Release Android Version'
         required: true
-        default: 'a_16'
+        default: 'a_14'
 
 jobs:
   build:
@@ -126,23 +124,14 @@ jobs:
         set +e
         source build/envsetup.sh
         export FOX_VARIANT=${{ inputs.ANDROID_VERSION }}
+        export MASERA_MODULE_VARIANT=a_16
         export ALLOW_MISSING_DEPENDENCIES=true
         set -e
 
-        if [ "${{ inputs.MANIFEST_BRANCH }}" = "12.1" ]; then
-          echo "Building for 12.1"
-          lunch twrp_${{ inputs.DEVICE_NAME }}-${{ inputs.BUILD_TYPE}} && make clean && mka adbd ${{ inputs.BUILD_TARGET }}image
-        fi
+        lunch twrp_${{ inputs.DEVICE_NAME }}-ap2a-${{ inputs.BUILD_TYPE }}
+        make clean
+        mka adbd ${{ inputs.BUILD_TARGET }}image
 
-        if [ "${{ inputs.MANIFEST_BRANCH }}" = "14.1" ]; then
-          echo "Building for 14.1"
-          lunch twrp_${{ inputs.DEVICE_NAME }}-ap2a-eng && make clean && mka adbd ${{ inputs.BUILD_TARGET }}image
-        fi
-
-        if [ "${{ inputs.MANIFEST_BRANCH }}" = "16.0" ]; then
-          echo "Building for 16.0"
-          lunch twrp_${{ inputs.DEVICE_NAME }}-bp2a-eng && make clean && mka adbd ${{ inputs.BUILD_TARGET }}image
-        fi
         if ! ls out/target/product/${{ inputs.DEVICE_NAME }}/OrangeFox*.img >/dev/null 2>&1; then
           echo "ERROR: no OrangeFox image was built (lunch or mka failed silently)"; exit 1
         fi

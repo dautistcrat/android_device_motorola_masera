@@ -7,4 +7,8 @@ PRODUCT_MAKEFILES := \
 # ========================================
 # Lunch Choices
 # ========================================
-COMMON_LUNCH_CHOICES := twrp_masera-bp2a-eng twrp_masera-userdebug twrp_masera-eng
+COMMON_LUNCH_CHOICES := \
+    twrp_masera-ap2a-eng \
+    twrp_masera-user \
+    twrp_masera-userdebug \
+    twrp_masera-eng

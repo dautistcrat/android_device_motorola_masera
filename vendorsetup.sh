@@ -13,8 +13,10 @@ export FOX_VIRTUAL_AB_DEVICE=1
 # Device uses Vendor_Boot partition for recovery ramdisk
 export FOX_VENDOR_BOOT_RECOVERY=1
 
-# LZMA Compression for Size Reduction
-export OF_USE_LZMA_COMPRESSION=1
+# Uniform lz4 ramdisk is mandatory (GKI spec): OF_USE_LZMA_COMPRESSION=1 sets
+# BOARD_RAMDISK_USE_LZMA=true (bootable/recovery/orangefox.mk), a live codec
+# input that is only shadowed by BOARD_RAMDISK_USE_LZ4 today. Keep it 0.
+export OF_USE_LZMA_COMPRESSION=0
 
 # Optional
 export FOX_BASH_TO_SYSTEM_BIN=1

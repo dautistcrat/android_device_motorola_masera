@@ -85,10 +85,12 @@ PRODUCT_PACKAGES += \
     mtk_plpath_utils.recovery
 
 # Default so the tree also builds under manifests that don't set FOX_VARIANT (e.g. minimal TWRP)
-FOX_VARIANT ?= a_16
-ifeq ($(FOX_VARIANT),a_16)
+FOX_VARIANT ?= a_14
+# Stock masera modules come from Android 16; keep their provenance independent of the recovery flavor
+MASERA_MODULE_VARIANT ?= a_16
+ifeq ($(MASERA_MODULE_VARIANT),a_16)
 PRODUCT_COPY_FILES += \
-    $(call find-copy-subdir-files,*,device/motorola/masera/per_version_modules/stock_16,$(TARGET_COPY_OUT_VENDOR_RAMDISK)/lib/modules)
+    $(call find-copy-subdir-files,*,device/motorola/masera/per_version_modules/$(MASERA_MODULE_VARIANT),$(TARGET_COPY_OUT_VENDOR_RAMDISK)/lib/modules)
 endif
 
 # To fix bootloop due to missing files
