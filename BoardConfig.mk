@@ -23,7 +23,7 @@ ENABLE_SCHEDBOOST := true
 # ========================================
 # Touch Screen Modules
 # ========================================
-TW_LOAD_VENDOR_MODULES := "mmi_info.ko mmi_relay.ko touchscreen_u_mmi.ko focaltech_touch_v3_u_mmi.ko flashlight.ko aw36518.ko aw86938s.ko"
+TW_LOAD_VENDOR_MODULES := "touchscreen_u_mmi.ko flashlight.ko"
 
 # ========================================
 # Variables (Device-Specific)
