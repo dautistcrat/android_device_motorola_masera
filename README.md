@@ -38,7 +38,7 @@ After restoring the stock `boot_a`, `init_boot_a`, and `vendor_boot_a` baseline:
 
 The direct cloud builds from commits `337244a69d` and `ef3332f044` pass the structural/ELF audit but power off before OrangeFox UI or adb. A green workflow is therefore not boot proof; those direct releases remain unvalidated. The local fstab-only experiment also failed and is not a delivery candidate.
 
-Still unverified: `/data` decryption, backup/restore, fastbootd, sideload persistence, MTP, and a plain-TWRP build. Known accepted limitation: USB-OTG flash drive (same gap as vienna).
+Also verified: `/data` decryption and `adb sideload`. Still unverified: backup/restore, fastbootd, MTP, installer-zip recovery persistence, and a plain-TWRP build. Known accepted limitation: USB-OTG flash drive (same gap as vienna).
 
 ## Reproduce the validated image
 
