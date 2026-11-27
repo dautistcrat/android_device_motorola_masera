@@ -27,18 +27,27 @@ Stock baseline: `XT2609-1_MASERA_RETUS_16_W3WF36.52-40-3`
 
 ## Status
 
-Untested — bring-up pending. Checklist mirrors the vienna donor tree:
+Validated artifact: `OrangeFox-masera-hybrid4.img` (exactly 67108864 bytes).
+This local image combines the masera SDK-34 platform fragment and stock module/fstab
+payload with the vienna donor recovery runtime, masera touch modules/firmware, and
+post-probe `mmi_info`/`focaltech_touch_v3_u_mmi` loading. It is the only recovery
+artifact currently approved for flashing.
 
-- [ ] Boot to OrangeFox UI (correct colors, touch, brightness)
-- [ ] ADB in recovery, `/tmp/recovery.log` clean
-- [ ] `/data` decrypt with PIN/password (FBE + wrappedkey)
-- [ ] Backup/restore round-trip (`boot` + `data`)
-- [ ] fastbootd answers `fastboot devices`
-- [ ] Sideload installer zip; recovery persists
-- [ ] MTP mount on host
-- [ ] Plain-TWRP build boots (decrypt best-effort on that base)
+After restoring the stock `boot_a`, `init_boot_a`, and `vendor_boot_a` baseline:
 
-Known accepted limitation: USB-OTG flash drive (same gap as vienna).
+| Kernel | Normal Android with hybrid4 installed | OrangeFox UI + touch | Root adb + five required modules |
+| ------ | ------------------------------------- | -------------------- | -------------------------------- |
+| Stock `6.1` | Passed | Passed | Passed |
+| WildKernel `6.1.145-android14-Wild` | Passed | Passed | Passed |
+
+The direct cloud builds from commits `337244a69d` and `ef3332f044` pass the
+structural/ELF audit but power off before OrangeFox UI or adb. A green workflow is
+therefore not boot proof; those direct releases remain unvalidated. The local fstab-only
+experiment also failed and is not a delivery candidate.
+
+Still unverified: `/data` decryption, backup/restore, fastbootd, sideload persistence,
+MTP, and a plain-TWRP build. Known accepted limitation: USB-OTG flash drive (same gap
+as vienna).
 
 ## Build with OrangeFox manifest (primary)
 
@@ -46,15 +55,18 @@ Known accepted limitation: USB-OTG flash drive (same gap as vienna).
 git clone https://gitlab.com/OrangeFox/misc/scripts
 cd scripts
 sudo bash setup/android_build_env.sh
-mkdir ~/fox_16.0 && cd ~/fox_16.0
+mkdir ~/fox_14.1 && cd ~/fox_14.1
 git clone https://gitlab.com/OrangeFox/sync.git && cd sync
-./orangefox_sync.sh --branch 16.0 --path ~/fox_16.0
-# (if the script rejects 16.0: repo init -u https://gitlab.com/OrangeFox/Manifest.git -b fox_16.0 --depth=1 && repo sync)
-cd ~/fox_16.0
-git clone https://github.com/dautistcrat/android_device_motorola_masera.git -b fox_16.0 device/motorola/masera
+./orangefox_sync.sh --branch 14.1 --path ~/fox_14.1
+# Fallback: repo init -u https://gitlab.com/OrangeFox/Manifest.git -b fox_14.1 --depth=1 && repo sync
+cd ~/fox_14.1
+git clone https://github.com/dautistcrat/android_device_motorola_masera.git -b fox_14.1 device/motorola/masera
 source build/envsetup.sh
-export FOX_VARIANT=a_16
-lunch twrp_masera-bp2a-eng && mka adbd vendorbootimage
+export FOX_VARIANT=a_14
+export MASERA_MODULE_VARIANT=a_16
+export ALLOW_MISSING_DEPENDENCIES=true
+lunch twrp_masera-ap2a-eng
+mka adbd vendorbootimage
 ```
 
 Artifacts: `out/target/product/masera/OrangeFox*.img` (must be ≤ 67108864 bytes)
@@ -65,28 +77,34 @@ and `OrangeFox*.zip`. Cloud builds run via `.github/workflows/OrangeFox-Compile.
 ```bash
 repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp -b twrp-14.1 --depth=1
 repo sync
-git clone https://github.com/dautistcrat/android_device_motorola_masera.git -b fox_16.0 device/motorola/masera
+git clone https://github.com/dautistcrat/android_device_motorola_masera.git -b fox_14.1 device/motorola/masera
 source build/envsetup.sh
+export FOX_VARIANT=a_14
+export MASERA_MODULE_VARIANT=a_16
 lunch twrp_masera-eng && mka vendorbootimage
 ```
 
-(`FOX_VARIANT` defaults to `a_16` in `device.mk`, so no extra exports are needed.)
+(`FOX_VARIANT` defaults to `a_14` and `MASERA_MODULE_VARIANT` to `a_16`; the explicit
+exports above document the required split between recovery runtime and stock modules.)
 Cloud builds run via `.github/workflows/TWRP-Compile.yml`.
 
-## Flash (current slot) and restore to stock
+## Flash validated recovery and restore stock
+
+The validated baseline uses slot `a` with the bootloader already unlocked and
+`ro.boot.verifiedbootstate=orange`. Do not flash vbmeta or erase userdata/metadata.
 
 ```bash
-SLOT=$(fastboot getvar current-slot 2>&1 | grep -oE 'a|b' | tail -1)
-# custom recovery (verification must stay disabled while it is flashed):
-fastboot flash vbmeta_$SLOT --disable-verity --disable-verification vbmeta.img
-fastboot flash vbmeta_system_$SLOT --disable-verity --disable-verification vbmeta_system.img
-fastboot flash vendor_boot_$SLOT OrangeFox-*-masera.img
-# restore stock (re-enables verified boot):
-fastboot flash vendor_boot_$SLOT vendor_boot.img
-fastboot flash vbmeta_$SLOT vbmeta.img
-fastboot flash vbmeta_system_$SLOT vbmeta_system.img
+# Install the validated local recovery:
+fastboot flash vendor_boot_a OrangeFox-masera-hybrid4.img
+fastboot reboot recovery
+
+# Restore the fully stock boot chain and stock recovery:
+fastboot flash boot_a boot.img
+fastboot flash init_boot_a init_boot.img
+fastboot flash vendor_boot_a vendor_boot.img
+fastboot reboot
 ```
 
-(`vbmeta.img`, `vbmeta_system.img`, `vendor_boot.img` are the stock files from the
-baseline zip. Never `fastboot boot` a vendor_boot image on MediaTek; never flash
-preloader/lk/modem; never downgrade the bootloader.)
+`boot.img`, `init_boot.img`, and `vendor_boot.img` are the verified files from the
+`W3WF36.52-40-3` baseline. Never `fastboot boot` a vendor_boot image on MediaTek;
+never flash preloader/lk/modem; never downgrade the bootloader.
