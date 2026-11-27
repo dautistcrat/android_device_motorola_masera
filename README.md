@@ -27,11 +27,7 @@ Stock baseline: `XT2609-1_MASERA_RETUS_16_W3WF36.52-40-3`
 
 ## Status
 
-Validated artifact: `OrangeFox-masera-hybrid4.img` (exactly 67108864 bytes).
-This local image combines the masera SDK-34 platform fragment and stock module/fstab
-payload with the vienna donor recovery runtime, masera touch modules/firmware, and
-post-probe `mmi_info`/`focaltech_touch_v3_u_mmi` loading. It is the only recovery
-artifact currently approved for flashing.
+Validated artifact: `OrangeFox-masera-hybrid4.img` (exactly 67108864 bytes). It is the only recovery artifact currently approved for flashing.
 
 After restoring the stock `boot_a`, `init_boot_a`, and `vendor_boot_a` baseline:
 
@@ -40,14 +36,19 @@ After restoring the stock `boot_a`, `init_boot_a`, and `vendor_boot_a` baseline:
 | Stock `6.1` | Passed | Passed | Passed |
 | WildKernel `6.1.145-android14-Wild` | Passed | Passed | Passed |
 
-The direct cloud builds from commits `337244a69d` and `ef3332f044` pass the
-structural/ELF audit but power off before OrangeFox UI or adb. A green workflow is
-therefore not boot proof; those direct releases remain unvalidated. The local fstab-only
-experiment also failed and is not a delivery candidate.
+The direct cloud builds from commits `337244a69d` and `ef3332f044` pass the structural/ELF audit but power off before OrangeFox UI or adb. A green workflow is therefore not boot proof; those direct releases remain unvalidated. The local fstab-only experiment also failed and is not a delivery candidate.
 
-Still unverified: `/data` decryption, backup/restore, fastbootd, sideload persistence,
-MTP, and a plain-TWRP build. Known accepted limitation: USB-OTG flash drive (same gap
-as vienna).
+Still unverified: `/data` decryption, backup/restore, fastbootd, sideload persistence, MTP, and a plain-TWRP build. Known accepted limitation: USB-OTG flash drive (same gap as vienna).
+
+## Reproduce the validated image
+
+`hybrid4` is a composite, not a clean `mka vendorbootimage` output.
+
+- Platform fragment: this repository's release tag `45878018134`.
+- Recovery runtime: `ChimpanziCloud/android_device_motorola_vienna` release tag `42209442018`.
+- Overlay masera recovery modules/firmware and stock `fstab.mt6878`/`fstab.emmc`.
+- After `twrp.modules.loaded=true`, insmod `mmi_info.ko`, then `focaltech_touch_v3_u_mmi.ko`.
+- Preserve vendor-boot v4/4096 and stock DTB, sign rollback/location `1/1`, require exactly 67108864 bytes.
 
 ## Build with OrangeFox manifest (primary)
 
